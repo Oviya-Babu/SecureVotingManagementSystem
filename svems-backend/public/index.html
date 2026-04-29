@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="State Assembly General Election 2025 — Secure Digital Voting System with Aadhaar and Biometric Verification">
+  <title>State Assembly Election 2025 — Secure Voting System</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <!-- ══════════════════════════════════════════════ -->
+  <!-- SCREEN 1: LANDING PAGE                        -->
+  <!-- ══════════════════════════════════════════════ -->
+  <section id="screen-landing" class="screen active">
+    <nav class="top-nav">
+      <div class="nav-brand">
+        <div class="emblem">⚖</div>
+        <span>Election Commission</span>
+      </div>
+      <div class="nav-links">
+        <a href="#" onclick="showScreen('screen-results')" id="nav-results">Live Results</a>
+        <a href="#" onclick="showScreen('screen-admin')" id="nav-admin">Admin Panel</a>
+      </div>
+    </nav>
+
+    <div class="hero">
+      <div class="hero-badge">
+        <span class="live-dot"></span>
+        <span id="election-status-badge">Polls Open</span>
+      </div>
+      <h1 class="hero-title">State Assembly<br>General Election 2025</h1>
+      <p class="hero-subtitle">Secure Digital Voting System — Tamil Nadu</p>
+      <p class="hero-desc">Aadhaar verified · Biometric authenticated </p>
+      <button class="btn btn-primary btn-lg" onclick="showScreen('screen-aadhaar')" id="btn-start-voting">
+        Start Voting
+        <span class="btn-arrow">→</span>
+      </button>
+    </div>
+
+    <!-- Live Ticker -->
+    <div class="ticker-bar" id="ticker-bar">
+      <div class="ticker-item">
+        <span class="ticker-label">Votes Cast</span>
+        <span class="ticker-value" id="ticker-votes">—</span>
+      </div>
+      <div class="ticker-divider"></div>
+      <div class="ticker-item">
+        <span class="ticker-label">Turnout</span>
+        <span class="ticker-value" id="ticker-turnout">—</span>
+      </div>
+      <div class="ticker-divider"></div>
+      <div class="ticker-item">
+        <span class="ticker-label">Constituencies</span>
+        <span class="ticker-value">36</span>
+      </div>
+      <div class="ticker-divider"></div>
+      <div class="ticker-item">
+        <span class="ticker-label">Leading</span>
+        <span class="ticker-value" id="ticker-leading">—</span>
+      </div>
+    </div>
+
+    <div class="hero-footer">
+      <div class="trust-badges">
+        <span class="trust-badge">🔒 SHA-256 Encrypted</span>
+        <span class="trust-badge">🛡 Triple Duplicate Guard</span>
+        <span class="trust-badge">📋 Immutable Audit Trail</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════ -->
+  <!-- SCREEN 2: AADHAAR VERIFICATION                -->
+  <!-- ══════════════════════════════════════════════ -->
+  <section id="screen-aadhaar" class="screen">
+    <nav class="top-nav">
+      <div class="nav-brand clickable" onclick="showScreen('screen-landing')">
+        <div class="emblem">⚖</div>
+        <span>Election Commission</span>
+      </div>
+      <div class="step-progress">
+        <div class="step active" id="step-1"><span>1</span> Aadhaar</div>
+        <div class="step-line"></div>
+        <div class="step" id="step-2"><span>2</span> Biometric</div>
+        <div class="step-line"></div>
+        <div class="step" id="step-3"><span>3</span> Vote</div>
+        <div class="step-line"></div>
+        <div class="step" id="step-4"><span>4</span> Done</div>
+      </div>
+    </nav>
+
+    <div class="auth-layout">
+      <div class="auth-card">
+        <div class="auth-card-header">
+          <h2>Aadhaar Verification</h2>
+          <p>Enter your 12-digit Aadhaar number to verify your identity</p>
+        </div>
+
+        <div class="input-group" id="aadhaar-input-group">
+          <label for="aadhaar-input">Aadhaar Number</label>
+          <input type="text" id="aadhaar-input" placeholder="0000 0000 0000"
+                 maxlength="14" autocomplete="off" inputmode="numeric">
+          <div class="input-hint" id="aadhaar-hint">Enter 12 digits</div>
+        </div>
+
+        <div class="error-box" id="aadhaar-error" style="display:none">
+          <span class="error-icon">✕</span>
+          <span class="error-text"></span>
+        </div>
+
+        <button class="btn btn-primary btn-full" id="btn-verify-aadhaar" onclick="verifyAadhaar()" disabled>
+          <span class="btn-text">Verify Aadhaar</span>
+          <span class="btn-loader" style="display:none"></span>
+        </button>
+      </div>
+
+      <!-- Demo Panel -->
+      <div class="demo-panel">
+        <h3>Demo Voters</h3>
+        <p>Click to auto-fill for testing</p>
+        <div class="demo-voters" id="demo-voters-list">
+          <button class="demo-voter-btn" onclick="fillAadhaar('900000000004')">
+            <span class="demo-name">Voter_004</span>
+            <span class="demo-aadhaar">9000 0000 0004</span>
+          </button>
+          <button class="demo-voter-btn" onclick="fillAadhaar('900000000010')">
+            <span class="demo-name">Voter_010</span>
+            <span class="demo-aadhaar">9000 0000 0010</span>
+          </button>
+          <button class="demo-voter-btn" onclick="fillAadhaar('900000000025')">
+            <span class="demo-name">Voter_025</span>
+            <span class="demo-aadhaar">9000 0000 0025</span>
+          </button>
+          <button class="demo-voter-btn" onclick="fillAadhaar('900000000050')">
+            <span class="demo-name">Voter_050</span>
+            <span class="demo-aadhaar">9000 0000 0050</span>
+          </button>
+          <button class="demo-voter-btn" onclick="fillAadhaar('123456789999')">
+            <span class="demo-name">Invalid</span>
+            <span class="demo-aadhaar">1234 5678 9999</span>
+            <span class="demo-tag tag-danger">Test Error</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════ -->
+  <!-- SCREEN 3: BIOMETRIC VERIFICATION              -->
+  <!-- ══════════════════════════════════════════════ -->
+  <section id="screen-biometric" class="screen">
+    <nav class="top-nav">
+      <div class="nav-brand">
+        <div class="emblem">⚖</div>
+        <span>Election Commission</span>
+      </div>
+      <div class="step-progress">
+        <div class="step done"><span>✓</span> Aadhaar</div>
+        <div class="step-line done"></div>
+        <div class="step active"><span>2</span> Biometric</div>
+        <div class="step-line"></div>
+        <div class="step"><span>3</span> Vote</div>
+        <div class="step-line"></div>
+        <div class="step"><span>4</span> Done</div>
+      </div>
+    </nav>
+
+    <div class="bio-layout">
+      <!-- Voter Info Card -->
+      <div class="voter-info-card" id="voter-info-card">
+        <div class="voter-info-header">
+          <span class="verified-badge">✓ Aadhaar Verified</span>
+        </div>
+        <div class="voter-info-body">
+          <div class="voter-detail"><span class="label">Name</span><span class="value" id="bio-voter-name">—</span></div>
+          <div class="voter-detail"><span class="label">Constituency</span><span class="value" id="bio-constituency">—</span></div>
+          <div class="voter-detail"><span class="label">Region</span><span class="value" id="bio-region">—</span></div>
+        </div>
+      </div>
+
+      <!-- Fingerprint Scanner -->
+      <div class="scanner-container">
+        <h2>Biometric Verification</h2>
+        <p>Place your finger on the scanner to verify your identity</p>
+
+        <div class="scanner-zone" id="scanner-zone" onclick="startBiometricScan()">
+          <div class="scanner-ring ring-1"></div>
+          <div class="scanner-ring ring-2"></div>
+          <div class="scanner-ring ring-3"></div>
+          <div class="scanner-icon" id="scanner-icon">
+            <svg viewBox="0 0 64 64" width="48" height="48">
+              <path d="M32 4C17.6 4 6 15.6 6 30c0 14.4 11.6 26 26 26s26-11.6 26-26C58 15.6 46.4 4 32 4z M32 8c5.2 0 10 1.8 13.8 4.8C42 16.4 37.2 18 32 18s-10-1.6-13.8-5.2C22 8 26.8 8 32 8z M32 52c-12.2 0-22-9.8-22-22 0-3.4.8-6.6 2.2-9.4C16.2 24.4 23.6 26 32 26s15.8-1.6 19.8-5.4C53.2 23.4 54 26.6 54 30c0 12.2-9.8 22-22 22z" fill="currentColor" opacity="0.8"/>
+              <path d="M32 12c-3.6 0-7 .6-10 1.8 3 2.4 6.4 3.8 10 3.8s7-1.4 10-3.8c-3-1.2-6.4-1.8-10-1.8z M20 30c0 6.6 5.4 12 12 12s12-5.4 12-12c0-2-.5-3.8-1.4-5.4-3 2-6.8 3.2-10.6 3.2s-7.6-1.2-10.6-3.2C20.5 26.2 20 28 20 30z M32 38c-4.4 0-8-3.6-8-8 0-1.2.3-2.4.8-3.4 2.2 1 4.6 1.6 7.2 1.6s5-0.6 7.2-1.6c.5 1 .8 2.2.8 3.4 0 4.4-3.6 8-8 8z" fill="currentColor" opacity="0.5"/>
+            </svg>
+          </div>
+          <div class="scanner-label" id="scanner-label">Tap to scan fingerprint</div>
+        </div>
+
+        <div class="scanner-progress" id="scanner-progress" style="display:none">
+          <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+          <span class="progress-text" id="progress-text">Scanning...</span>
+        </div>
+
+        <div class="bio-error" id="bio-error" style="display:none">
+          <span class="error-icon">✕</span>
+          <span class="error-text"></span>
+        </div>
+
+        <button class="btn btn-primary btn-full" id="btn-proceed-vote" onclick="showScreen('screen-vote')" style="display:none">
+          Proceed to Vote →
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════ -->
+  <!-- SCREEN 4: VOTING PAGE                        -->
+  <!-- ══════════════════════════════════════════════ -->
+  <section id="screen-vote" class="screen">
+    <nav class="top-nav">
+      <div class="nav-brand">
+        <div class="emblem">⚖</div>
+        <span>Election Commission</span>
+      </div>
+      <div class="step-progress">
+        <div class="step done"><span>✓</span> Aadhaar</div>
+        <div class="step-line done"></div>
+        <div class="step done"><span>✓</span> Biometric</div>
+        <div class="step-line done"></div>
+        <div class="step active"><span>3</span> Vote</div>
+        <div class="step-line"></div>
+        <div class="step"><span>4</span> Done</div>
+      </div>
+    </nav>
+
+    <div class="vote-layout">
+      <div class="vote-header">
+        <div class="constituency-strip">
+          <span class="const-name" id="vote-constituency">—</span>
+          <span class="const-region" id="vote-region">—</span>
+        </div>
+      </div>
+
+      <h2 class="vote-title">Select Your Candidate</h2>
+      <p class="vote-subtitle">Choose one candidate from your constituency. This action is <strong>irreversible</strong>.</p>
+
+      <div class="candidates-grid" id="candidates-grid">
+        <!-- Populated by JS -->
+      </div>
+
+      <!-- NOTA Separator -->
+      <div class="nota-separator" id="nota-separator" style="display:none">
+        <span class="nota-line"></span>
+        <span class="nota-text">OR</span>
+        <span class="nota-line"></span>
+      </div>
+      <div id="nota-container"></div>
+
+      <!-- Confirmation Box -->
+      <div class="confirm-box" id="confirm-box" style="display:none">
+        <div class="confirm-inner">
+          <h3>Confirm Your Vote</h3>
+          <div class="confirm-candidate" id="confirm-candidate-info"></div>
+          <p class="confirm-warning">⚠ This action is irreversible. Your vote cannot be changed after submission.</p>
+          <div class="confirm-actions">
+            <button class="btn btn-outline" onclick="cancelSelection()">Cancel</button>
+            <button class="btn btn-success" id="btn-submit-vote" onclick="submitVote()">
+              <span class="btn-text">Submit Vote</span>
+              <span class="btn-loader" style="display:none"></span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="vote-error" id="vote-error" style="display:none">
+        <span class="error-icon">✕</span>
+        <span class="error-text"></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════ -->
+  <!-- SCREEN 5: VOTE SUCCESS                       -->
+  <!-- ══════════════════════════════════════════════ -->
+  <section id="screen-success" class="screen">
+    <div class="success-layout">
+      <div class="success-checkmark">
+        <div class="check-circle">
+          <svg viewBox="0 0 52 52" class="check-svg">
+            <circle cx="26" cy="26" r="25" fill="none" class="check-circle-bg"/>
+            <path fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8" class="check-path"/>
+          </svg>
+        </div>
+      </div>
+
+      <h1 class="success-title">Your Vote Has Been Recorded!</h1>
+      <p class="success-subtitle">Thank you for participating in the democratic process</p>
+
+      <div class="receipt-card">
+        <div class="receipt-header">
+          <span class="receipt-badge">✓ Verified</span>
+          <span>Vote Receipt</span>
+        </div>
+        <div class="receipt-body">
+          <div class="receipt-row"><span>Vote ID</span><span id="receipt-voteid">—</span></div>
+          <div class="receipt-row"><span>Receipt Hash</span><span id="receipt-hash" class="mono">—</span></div>
+          <div class="receipt-row"><span>Timestamp</span><span id="receipt-timestamp">—</span></div>
+          <div class="receipt-row"><span>Constituency</span><span id="receipt-constituency">—</span></div>
+        </div>
+        <p class="receipt-note">The receipt hash is cryptographic proof that your vote was cast. Store it safely.</p>
+      </div>
+
+      <button class="btn btn-primary btn-lg" onclick="showScreen('screen-results')">View Live Results →</button>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════ -->
+  <!-- SCREEN 6: RESULTS DASHBOARD                  -->
+  <!-- ══════════════════════════════════════════════ -->
+  <section id="screen-results" class="screen">
+    <nav class="top-nav">
+      <div class="nav-brand clickable" onclick="showScreen('screen-landing')">
+        <div class="emblem">⚖</div>
+        <span>Election Commission</span>
+      </div>
+      <div class="nav-links">
+        <span class="live-badge"><span class="live-dot red"></span> LIVE</span>
+        <a href="#" onclick="showScreen('screen-landing')">Home</a>
+        <a href="#" onclick="showScreen('screen-admin')">Admin</a>
+      </div>
+    </nav>
+
+    <div class="results-layout">
+      <h2 class="section-title">Election Results Dashboard</h2>
+
+      <!-- Stat Cards -->
+      <div class="stat-cards" id="stat-cards">
+        <div class="stat-card"><div class="stat-value" id="stat-totalvotes">0</div><div class="stat-label">Votes Cast</div></div>
+        <div class="stat-card"><div class="stat-value" id="stat-turnout">0%</div><div class="stat-label">Voter Turnout</div></div>
+        <div class="stat-card"><div class="stat-value" id="stat-seats">0/36</div><div class="stat-label">Seats Decided</div></div>
+        <div class="stat-card accent"><div class="stat-value" id="stat-winner">—</div><div class="stat-label">Leading Party</div></div>
+      </div>
+
+      <!-- Winner Banner -->
+      <div class="winner-banner" id="winner-banner" style="display:none">
+        <div class="winner-icon">🏆</div>
+        <div class="winner-info">
+          <h3 id="winner-party-name">—</h3>
+          <p id="winner-party-seats">— seats</p>
+        </div>
+        <div class="winner-majority" id="winner-majority"></div>
+      </div>
+
+      <!-- Charts Row -->
+      <div class="charts-row">
+        <div class="chart-card">
+          <h3>Seats Won by Party</h3>
+          <canvas id="chart-seats" height="300"></canvas>
+        </div>
+        <div class="chart-card">
+          <h3>Vote Share Distribution</h3>
+          <canvas id="chart-voteshare" height="300"></canvas>
+        </div>
+      </div>
+
+      <!-- Party Scoreboard -->
+      <div class="party-scoreboard" id="party-scoreboard"></div>
+
+      <!-- Constituency Table -->
+      <div class="constituency-section">
+        <div class="section-header">
+          <h3>Constituency-wise Results</h3>
+          <input type="text" id="constituency-search" placeholder="Search constituency..." class="search-input">
+        </div>
+        <div class="table-container">
+          <table class="results-table" id="constituency-table">
+            <thead>
+              <tr>
+                <th>Constituency</th>
+                <th>Winner</th>
+                <th>Party</th>
+                <th>Votes</th>
+              </tr>
+            </thead>
+            <tbody id="constituency-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════ -->
+  <!-- SCREEN 7: ADMIN PANEL                        -->
+  <!-- ══════════════════════════════════════════════ -->
+  <section id="screen-admin" class="screen">
+    <div class="admin-layout">
+      <!-- Sidebar -->
+      <aside class="admin-sidebar">
+        <div class="sidebar-brand">
+          <div class="emblem">⚖</div>
+          <span>Admin Panel</span>
+        </div>
+        <nav class="sidebar-nav">
+          <a class="sidebar-link active" onclick="switchAdminTab('dashboard')" id="tab-dashboard">📊 Dashboard</a>
+          <a class="sidebar-link" onclick="switchAdminTab('simulation')" id="tab-simulation">⚡ Simulation</a>
+          <a class="sidebar-link" onclick="switchAdminTab('voters')" id="tab-voters">👥 Voters</a>
+          <a class="sidebar-link" onclick="switchAdminTab('candidates-tab')" id="tab-candidates-tab">🎯 Candidates</a>
+          <a class="sidebar-link" onclick="switchAdminTab('audit')" id="tab-audit">📋 Audit Log</a>
+        </nav>
+        <a class="sidebar-link sidebar-back" onclick="showScreen('screen-landing')">← Back to Home</a>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="admin-main">
+        <!-- Dashboard Tab -->
+        <div class="admin-tab active" id="admin-dashboard">
+          <h2>Election Dashboard</h2>
+          <div class="admin-stats" id="admin-stats">
+            <div class="stat-card"><div class="stat-value" id="admin-total-voters">732</div><div class="stat-label">Registered Voters</div></div>
+            <div class="stat-card"><div class="stat-value" id="admin-total-votes">0</div><div class="stat-label">Votes Cast</div></div>
+            <div class="stat-card"><div class="stat-value" id="admin-turnout">0%</div><div class="stat-label">Turnout</div></div>
+            <div class="stat-card"><div class="stat-value" id="admin-seats">0</div><div class="stat-label">Seats Decided</div></div>
+          </div>
+        </div>
+
+        <!-- Simulation Tab -->
+        <div class="admin-tab" id="admin-simulation">
+          <h2>Simulation Controls</h2>
+          <p class="admin-desc">Generate votes for all 732 voters using the sp_SimulateBulkVotes cursor-based stored procedure.</p>
+          <div class="sim-controls">
+            <div class="sim-card">
+              <h3>⚡ Run Simulation</h3>
+              <p>Generates random votes for all unvoted voters. 90% real candidates, 10% NOTA.</p>
+              <button class="btn btn-primary" id="btn-simulate" onclick="runSimulation()">Run Simulation</button>
+            </div>
+            <div class="sim-card">
+              <h3>🏆 Mark Winners</h3>
+              <p>Determines one winner per constituency. Tie-break by lowest CandidateID.</p>
+              <button class="btn btn-accent" id="btn-mark-winners" onclick="markWinners()">Mark Winners</button>
+            </div>
+            <div class="sim-card danger">
+              <h3>🗑 Reset Demo</h3>
+              <p>Clears all votes, results, and auth records. Preserves voter data.</p>
+              <button class="btn btn-danger" id="btn-reset" onclick="resetDemo()">Reset All Data</button>
+            </div>
+          </div>
+          <div class="sim-log" id="sim-log"></div>
+        </div>
+
+        <!-- Voters Tab -->
+        <div class="admin-tab" id="admin-voters">
+          <h2>Registered Voters</h2>
+          <div class="table-container">
+            <table class="results-table">
+              <thead><tr><th>ID</th><th>Name</th><th>Gender</th><th>Constituency</th><th>Region</th><th>Status</th></tr></thead>
+              <tbody id="voters-tbody"></tbody>
+            </table>
+          </div>
+          <div class="pagination" id="voters-pagination"></div>
+        </div>
+
+        <!-- Candidates Tab -->
+        <div class="admin-tab" id="admin-candidates-tab">
+          <h2>All Candidates</h2>
+          <div class="table-container">
+            <table class="results-table">
+              <thead><tr><th>Name</th><th>Party</th><th>Constituency</th><th>Votes</th><th>Winner</th></tr></thead>
+              <tbody id="candidates-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Audit Tab -->
+        <div class="admin-tab" id="admin-audit">
+          <h2>Audit Log</h2>
+          <div class="table-container">
+            <table class="results-table">
+              <thead><tr><th>ID</th><th>Table</th><th>Action</th><th>Record</th><th>Changed By</th><th>Time</th></tr></thead>
+              <tbody id="audit-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </main>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════ -->
+  <!-- MODAL OVERLAY                                -->
+  <!-- ══════════════════════════════════════════════ -->
+  <div class="modal-overlay" id="modal-overlay" style="display:none">
+    <div class="modal" id="modal">
+      <h3 id="modal-title">Confirm</h3>
+      <p id="modal-message">Are you sure?</p>
+      <div class="modal-actions">
+        <button class="btn btn-outline" onclick="closeModal()">Cancel</button>
+        <button class="btn btn-danger" id="modal-confirm-btn" onclick="confirmModal()">Confirm</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/app.js"></script>
+</body>
+</html>
