@@ -15,7 +15,7 @@ const PORT = process.env.PORT || 3000;
 app.use(cors({
   origin: ['http://localhost:3000', 'http://127.0.0.1:3000'],
   methods: ['GET', 'POST'],
-  allowedHeaders: ['Content-Type']
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -29,7 +29,16 @@ app.use((req, res, next) => {
 });
 
 // ── Static Files (Frontend) ──
-app.use(express.static(path.join(__dirname, 'public')));
+// setHeaders: disable caching for HTML so browsers always get the latest version.
+// JS/CSS files can use default caching (they change less frequently).
+app.use(express.static(path.join(__dirname, 'public'), {
+  setHeaders: (res, filePath) => {
+    if (filePath.endsWith('.html')) {
+      res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate');
+      res.setHeader('Pragma', 'no-cache');
+    }
+  }
+}));
 
 // ── API Routes ──
 const authRoutes = require('./routes/auth');
@@ -75,6 +84,13 @@ app.use((err, req, res, next) => {
     message: 'An unexpected error occurred.'
   });
 });
+
+// ── Startup Config Validation ──
+const REQUIRED_ENV = ['APP_DB_HOST', 'APP_DB_USER', 'APP_DB_PASSWORD', 'APP_DB_NAME', 'JWT_SECRET'];
+const missingEnv = REQUIRED_ENV.filter(k => !process.env[k]);
+if (missingEnv.length > 0) {
+  console.warn(`[SERVER] ⚠️  Missing env vars: ${missingEnv.join(', ')} — using defaults`);
+}
 
 // ── Start Server ──
 app.listen(PORT, () => {

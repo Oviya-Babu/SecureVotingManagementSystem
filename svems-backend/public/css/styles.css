@@ -55,6 +55,9 @@ body{font-family:var(--font-body);background:var(--bg);color:var(--text);min-hei
 .btn-arrow{transition:.2s}
 .btn:hover .btn-arrow{transform:translateX(4px)}
 .btn-loader{width:18px;height:18px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite}
+.btn-text-only{background:transparent;color:var(--text-muted);font-size:13px;padding:8px 12px;margin-top:12px}
+.btn-text-only:hover{color:var(--navy);text-decoration:underline}
+.btn-text-only.danger:hover{color:var(--red)}
 @keyframes spin{to{transform:rotate(360deg)}}
 
 /* TICKER */
@@ -105,10 +108,10 @@ body{font-family:var(--font-body);background:var(--bg);color:var(--text);min-hei
 .scanner-container{text-align:center;width:100%}
 .scanner-container h2{font-family:var(--font-heading);font-size:22px;color:var(--navy);margin-bottom:8px}
 .scanner-container>p{font-size:14px;color:var(--text-muted);margin-bottom:24px}
-.scanner-zone{width:180px;height:180px;border-radius:50%;border:3px dashed #cbd5e1;margin:0 auto 24px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;position:relative;transition:all .3s}
-.scanner-zone:hover{border-color:var(--navy);background:rgba(26,58,143,.03)}
+/* Scanner zone is now a STATUS INDICATOR only — cursor:default, no hover lift */
+.scanner-zone{width:160px;height:160px;border-radius:50%;border:3px dashed #cbd5e1;margin:0 auto 20px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:default;position:relative;transition:all .3s}
 .scanner-zone.scanning{border-color:var(--amber);border-style:solid;animation:scanPulse 1s ease infinite}
-.scanner-zone.success{border-color:var(--green);border-style:solid;background:#e8f5e9}
+.scanner-zone.success{border-color:var(--green);border-style:solid;background:#e8f5e9;cursor:default}
 .scanner-zone.failed{border-color:var(--red);border-style:solid;background:#fef2f2}
 @keyframes scanPulse{0%,100%{box-shadow:0 0 0 0 rgba(180,83,9,.3)}50%{box-shadow:0 0 0 20px rgba(180,83,9,0)}}
 .scanner-icon{font-size:48px;color:var(--navy);margin-bottom:8px}
@@ -123,6 +126,14 @@ body{font-family:var(--font-body);background:var(--bg);color:var(--text);min-hei
 .progress-bar{height:6px;background:#e2e8f0;border-radius:3px;overflow:hidden;margin-bottom:8px}
 .progress-fill{height:100%;background:var(--amber);border-radius:3px;width:0;transition:width .1s linear}
 .progress-text{font-size:13px;color:var(--text-muted)}
+/* Fingerprint input — user must actively provide fingerprint code */
+.fingerprint-input-group{width:100%;text-align:left;margin-bottom:12px}
+.fp-label{display:block;font-size:13px;font-weight:600;color:var(--navy);margin-bottom:6px}
+.fp-input{width:100%;padding:12px 16px;border:2px solid #e2e8f0;border-radius:10px;font-size:15px;font-family:var(--font);outline:none;transition:border-color .2s,box-shadow .2s;letter-spacing:2px;box-sizing:border-box}
+.fp-input:focus{border-color:var(--navy);box-shadow:0 0 0 3px rgba(26,58,143,.12)}
+.fp-input::placeholder{letter-spacing:0;color:#94a3b8}
+.fp-demo-hint{margin-top:8px;font-size:12px;color:#64748b;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:8px 12px;line-height:1.5}
+
 
 /* VOTE PAGE */
 .vote-layout{max-width:800px;margin:0 auto;padding:32px 24px}
@@ -155,6 +166,7 @@ body{font-family:var(--font-body);background:var(--bg);color:var(--text);min-hei
 .confirm-candidate{background:var(--bg);padding:12px;border-radius:8px;margin-bottom:12px;font-weight:500}
 .confirm-warning{font-size:13px;color:var(--amber);margin-bottom:16px}
 .confirm-actions{display:flex;gap:12px}
+.vote-footer-actions{display:flex;justify-content:space-between;margin-top:40px;border-top:1px solid #e2e8f0;padding-top:20px}
 
 /* SUCCESS */
 .success-layout{text-align:center;padding:80px 24px;max-width:500px;margin:0 auto}
@@ -194,10 +206,16 @@ body{font-family:var(--font-body);background:var(--bg);color:var(--text);min-hei
 .chart-card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:20px}
 .chart-card h3{font-size:16px;font-weight:600;margin-bottom:16px;color:var(--navy)}
 .party-scoreboard{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:24px}
-.party-score-card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px;text-align:center;border-top:4px solid #e2e8f0}
-.party-score-card .party-code{font-size:13px;font-weight:700;margin-bottom:4px}
-.party-score-card .party-seats{font-size:32px;font-weight:700;font-family:var(--font-heading)}
-.party-score-card .party-votes{font-size:12px;color:var(--text-muted)}
+.party-score-card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px;text-align:center;border-top:4px solid #e2e8f0;position:relative;transition:.2s}
+.party-score-card.leader{box-shadow:0 4px 20px rgba(26,58,143,.18);transform:translateY(-3px);border-top-width:5px}
+.party-score-card .party-code{font-size:13px;font-weight:700;margin-bottom:2px}
+.party-score-card .party-name-small{font-size:11px;color:var(--text-muted);margin-bottom:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.party-score-card .party-seats{font-size:28px;font-weight:700;font-family:var(--font-heading)}
+.party-score-card .party-votes{font-size:12px;color:var(--text-muted);margin-bottom:8px}
+.party-bar-track{height:5px;background:#e2e8f0;border-radius:3px;overflow:hidden}
+.party-bar-fill{height:100%;border-radius:3px;transition:width .6s ease}
+.leader-badge{background:#FFF9C4;color:#92400E;font-size:10px;font-weight:700;padding:2px 8px;border-radius:12px;position:absolute;top:-1px;left:50%;transform:translateX(-50%);white-space:nowrap}
+.tie-banner{grid-column:1/-1;background:#FEF9C3;border:1px solid #FDE68A;border-radius:10px;padding:10px 16px;font-size:13px;font-weight:600;color:#92400E;text-align:center}
 .constituency-section{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:24px}
 .section-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
 .section-header h3{font-size:18px;font-weight:600;color:var(--navy)}

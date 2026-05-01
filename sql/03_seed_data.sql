@@ -47,7 +47,7 @@ INSERT INTO PoliticalParty (PartyCode, PartyName, PartySymbol, PartyColor) VALUE
 ('PVM',  'Praja Vikas Manch',         'hand.png',     '#1A3A8F'),
 ('PAS',  'Progressive Alliance Seva', 'star.png',     '#16803C'),
 ('PRO',  'Peoples Reform Organisation','wheel.png',   '#8B5CF6'),
-('NVM',  'National Vikas Movement',   'torch.png',    '#DC2626'),
+('WIN',  'National Vikas Movement',   'torch.png',    '#DC2626'),
 ('NOTA', 'None of the Above',         'nota.png',     '#6B7280');
 
 -- ============================================================

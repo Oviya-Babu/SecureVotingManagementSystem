@@ -63,6 +63,9 @@ router.post('/reset-votes', async (req, res) => {
     // Re-initialize Result table with 0 votes for all candidates
     await conn.query(`INSERT INTO Result (ElectionID, CandidateID, ConstituencyID, TotalVotes, IsWinner)
       SELECT 1, c.CandidateID, c.ConstituencyID, 0, 0 FROM Candidate c WHERE c.ElectionID = 1`);
+      
+    // Reopen the election for fresh voting
+    await conn.query(`UPDATE Election SET Status = 'Active' WHERE ElectionID = 1`);
     conn.release();
     console.log('[ADMIN] ✅ Reset complete');
     return res.json({ success: true, code: 'RESET_COMPLETE', message: 'All votes, results, and auth records have been reset.' });

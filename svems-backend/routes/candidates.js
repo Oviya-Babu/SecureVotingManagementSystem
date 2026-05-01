@@ -1,23 +1,20 @@
 // ============================================================
 // routes/candidates.js — Candidate Listing
-// GET /api/candidates?constituencyID=X
+// GET /api/candidates?constituencyID=X&electionID=1
+// FIX: Added AND c.ElectionID = ? to prevent cross-election data leakage
 // ============================================================
 
 const express = require('express');
 const router = express.Router();
 const db = require('../db');
 
-// ─────────────────────────────────────────────
-// GET /api/candidates?constituencyID=X
-// Returns candidate list for a constituency
-// ─────────────────────────────────────────────
 router.get('/', async (req, res) => {
   const { constituencyID } = req.query;
-  const electionID = req.query.electionID || 1;
+  const electionID = parseInt(req.query.electionID) || 1;
 
-  console.log(`[CANDIDATES] Fetching candidates for ConstituencyID=${constituencyID}`);
+  console.log(`[CANDIDATES] Fetching for ConstituencyID=${constituencyID}, ElectionID=${electionID}`);
 
-  if (!constituencyID) {
+  if (!constituencyID || isNaN(parseInt(constituencyID))) {
     return res.status(400).json({
       success: false,
       code: 'MISSING_FIELDS',
@@ -26,24 +23,35 @@ router.get('/', async (req, res) => {
   }
 
   try {
+    // FIX (ROOT CAUSE C): Added AND c.ElectionID = ? — without this, candidates from ALL
+    // elections leak into the ballot if the DB has multi-election data.
     const [rows] = await db.query(
       `SELECT c.CandidateID, c.CandidateName, c.AgeAtElection, c.Education, c.IsNOTA,
-              pp.PartyID, pp.PartyCode, pp.PartyName, pp.PartySymbol,
+              pp.PartyCode, pp.PartyName,
               con.ConstituencyName
        FROM Candidate c
        JOIN PoliticalParty pp ON c.PartyID = pp.PartyID
        JOIN Constituency con ON c.ConstituencyID = con.ConstituencyID
        WHERE c.ConstituencyID = ? AND c.ElectionID = ?
        ORDER BY c.IsNOTA ASC, c.CandidateID ASC`,
-      [constituencyID, electionID]
+      [parseInt(constituencyID), electionID]
     );
 
     console.log(`[CANDIDATES] ✅ Found ${rows.length} candidates`);
 
+    if (rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        code: 'NO_CANDIDATES',
+        message: 'No candidates found for this constituency.'
+      });
+    }
+
     return res.json({
       success: true,
       constituencyID: parseInt(constituencyID),
-      constituencyName: rows.length > 0 ? rows[0].ConstituencyName : '',
+      constituencyName: rows[0].ConstituencyName || '',
+      electionID,
       candidates: rows
     });
 

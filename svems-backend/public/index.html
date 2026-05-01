@@ -15,7 +15,7 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 
   <!-- Styles -->
-  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/styles.css?v=4">
 </head>
 <body>
 
@@ -123,11 +123,14 @@
           <span class="btn-text">Verify Aadhaar</span>
           <span class="btn-loader" style="display:none"></span>
         </button>
+
+        <button class="btn btn-text-only btn-full" onclick="cancelVoting()">
+          ← Back to Home
+        </button>
       </div>
 
       <!-- Demo Panel -->
       <div class="demo-panel">
-        <h3>Demo Voters</h3>
         <p>Click to auto-fill for testing</p>
         <div class="demo-voters" id="demo-voters-list">
           <button class="demo-voter-btn" onclick="fillAadhaar('900000000004')">
@@ -192,9 +195,10 @@
       <!-- Fingerprint Scanner -->
       <div class="scanner-container">
         <h2>Biometric Verification</h2>
-        <p>Place your finger on the scanner to verify your identity</p>
+        <p>Enter your fingerprint code and click <strong>Scan Fingerprint</strong> to verify identity</p>
 
-        <div class="scanner-zone" id="scanner-zone" onclick="startBiometricScan()">
+        <!-- Visual scanner circle — status indicator only, NOT auto-triggering -->
+        <div class="scanner-zone" id="scanner-zone">
           <div class="scanner-ring ring-1"></div>
           <div class="scanner-ring ring-2"></div>
           <div class="scanner-ring ring-3"></div>
@@ -204,8 +208,30 @@
               <path d="M32 12c-3.6 0-7 .6-10 1.8 3 2.4 6.4 3.8 10 3.8s7-1.4 10-3.8c-3-1.2-6.4-1.8-10-1.8z M20 30c0 6.6 5.4 12 12 12s12-5.4 12-12c0-2-.5-3.8-1.4-5.4-3 2-6.8 3.2-10.6 3.2s-7.6-1.2-10.6-3.2C20.5 26.2 20 28 20 30z M32 38c-4.4 0-8-3.6-8-8 0-1.2.3-2.4.8-3.4 2.2 1 4.6 1.6 7.2 1.6s5-0.6 7.2-1.6c.5 1 .8 2.2.8 3.4 0 4.4-3.6 8-8 8z" fill="currentColor" opacity="0.5"/>
             </svg>
           </div>
-          <div class="scanner-label" id="scanner-label">Tap to scan fingerprint</div>
+          <div class="scanner-label" id="scanner-label">Awaiting fingerprint scan</div>
         </div>
+
+        <!-- Fingerprint Input: user MUST provide this — no auto-fill -->
+        <div class="fingerprint-input-group" id="fingerprint-input-group">
+          <label class="fp-label" for="fingerprint-input">Fingerprint Code</label>
+          <input
+            type="password"
+            id="fingerprint-input"
+            class="fp-input"
+            placeholder="Enter your fingerprint code"
+            autocomplete="off"
+            oninput="onFingerprintInput()"
+          />
+          <div class="fp-demo-hint" id="fp-demo-hint">
+            💡 <strong>Demo:</strong> Your fingerprint code is your 12-digit Aadhaar number
+          </div>
+        </div>
+
+        <!-- Explicit scan button — DISABLED until input has content -->
+        <button class="btn btn-primary btn-full" id="btn-scan-fingerprint" onclick="startBiometricScan()" disabled>
+          <span class="btn-text">🔍 Scan Fingerprint</span>
+          <span class="btn-loader" style="display:none">◌</span>
+        </button>
 
         <div class="scanner-progress" id="scanner-progress" style="display:none">
           <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
@@ -217,8 +243,13 @@
           <span class="error-text"></span>
         </div>
 
-        <button class="btn btn-primary btn-full" id="btn-proceed-vote" onclick="showScreen('screen-vote')" style="display:none">
+        <!-- Hidden until backend confirms biometric success -->
+        <button class="btn btn-primary btn-full" id="btn-proceed-vote" onclick="proceedToVote()" style="display:none">
           Proceed to Vote →
+        </button>
+
+        <button class="btn btn-text-only btn-full" onclick="showScreen('screen-aadhaar')">
+          ← Back to Aadhaar
         </button>
       </div>
     </div>
@@ -281,6 +312,15 @@
             </button>
           </div>
         </div>
+      </div>
+
+      <div class="vote-footer-actions">
+        <button class="btn btn-text-only" onclick="showScreen('screen-biometric')">
+          ← Back to Biometric
+        </button>
+        <button class="btn btn-text-only danger" onclick="cancelVoting()">
+          ✕ Cancel Voting
+        </button>
       </div>
 
       <div class="vote-error" id="vote-error" style="display:none">
@@ -509,6 +549,6 @@
     </div>
   </div>
 
-  <script src="js/app.js"></script>
+  <script src="js/app.js?v=4"></script>
 </body>
 </html>

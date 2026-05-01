@@ -21,7 +21,7 @@ function validateAadhaar(req, res, next) {
   if (!/^\d{12}$/.test(cleaned)) {
     return res.status(400).json({
       success: false,
-      code: 'INVALID_AADHAAR_FORMAT',
+      code: 'INVALID_AADHAAR',
       message: 'Please enter a valid 12-digit Aadhaar number.'
     });
   }
@@ -86,4 +86,40 @@ function validateBiometric(req, res, next) {
   next();
 }
 
-module.exports = { validateAadhaar, validateVote, validateBiometric };
+// validateFingerprintCode — for POST /auth/verify-biometric
+// Accepts fingerprintCode as the 12-digit Aadhaar number for demo purposes
+function validateFingerprintCode(req, res, next) {
+  const { aadhaar, fingerprintCode } = req.body;
+
+  if (!aadhaar || !fingerprintCode) {
+    return res.status(400).json({
+      success: false,
+      code: 'MISSING_FIELDS',
+      message: 'aadhaar and fingerprintCode are required.'
+    });
+  }
+
+  const cleaned = String(aadhaar).replace(/\s/g, '');
+  if (!/^\d{12}$/.test(cleaned)) {
+    return res.status(400).json({
+      success: false,
+      code: 'INVALID_AADHAAR',
+      message: 'Invalid Aadhaar format.'
+    });
+  }
+
+  const cleanedFp = String(fingerprintCode).replace(/\s/g, '');
+  if (!/^\d{12}$/.test(cleanedFp)) {
+    return res.status(400).json({
+      success: false,
+      code: 'INVALID_FORMAT',
+      message: 'Fingerprint code must be your 12-digit Aadhaar number.'
+    });
+  }
+
+  req.body.aadhaar = cleaned;
+  req.body.fingerprintCode = cleanedFp;
+  next();
+}
+
+module.exports = { validateAadhaar, validateVote, validateBiometric, validateFingerprintCode };
