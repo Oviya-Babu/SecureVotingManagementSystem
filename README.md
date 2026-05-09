@@ -1,4 +1,4 @@
-# 🗳️ SVMS — Aadhaar & Biometric Based Secure Digital Voting System
+# 🗳️ SVEMS — Aadhaar & Biometric Based Secure Digital Voting System
 
 <div align="center">
 
@@ -18,7 +18,7 @@
 
 # 🌟 Overview
 
-SVMS is a **full-stack secure digital voting management system** designed to simulate a modern election environment using advanced database concepts, secure backend validation, and real-time analytics.
+SVEMS is a **full-stack secure digital voting management system** designed to simulate a modern election environment using advanced database concepts, secure backend validation, and real-time analytics.
 
 This project was developed as part of a **DBMS semester project** to explore how relational databases can be integrated with frontend and backend systems while learning practical full-stack development through implementation.
 
